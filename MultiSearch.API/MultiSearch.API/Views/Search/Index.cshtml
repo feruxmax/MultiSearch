@@ -1,0 +1,69 @@
+﻿@{
+    Layout = null;
+}
+
+<html>
+<head>
+    <script src="~/Scripts/jquery-3.3.1.js"></script>
+</head>
+
+<body>
+    <div>
+        <input type="text"/>
+    </div>
+    <div>
+        <button>Search</button>
+    </div>
+
+    <div class="container">
+
+    </div>
+
+    <script>
+        $("button").click(function () {
+            var searchText = $("input").val();
+
+            $.ajax({
+                url: "/api/search",
+                data: {
+                    "query": searchText,
+                },
+                cache: false,
+                type: "GET",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    $(".container").empty();
+
+                    if (data.Error == null) {
+                        if (data.Items == null || data.Items.length == 0) {
+                            $(".container").append("<b>Not Found</b>");
+                        }
+                        else {
+                            jQuery.each(data.Items, function (index, value) {
+                                var div = $("<div/>");
+                                var link = $("<a />", {
+                                    name: index,
+                                    href: value.Url,
+                                    text: value.Title
+                                });
+                                div.append(link);
+
+                                $(".container").append(div);
+                            });
+                        }
+                    }
+                    else {
+                        $(".container").append("<b>Not Found</b>");
+                    }
+                },
+                error: function (err) {
+                    console.debug("error");
+                    console.debug(err);
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>
+
